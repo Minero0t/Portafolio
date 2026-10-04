@@ -1,0 +1,1366 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jorge (zDr0peador) | Management y desarrollo de plugins</title>
+  <meta name="description" content="Portafolio de Jorge (zDr0peador): management de proyectos y comunidades, con experiencia como programador y desarrollador de plugins.">
+  <meta name="theme-color" content="#080C16">
+  <meta property="og:title" content="Jorge (zDr0peador) | Management y desarrollo de plugins">
+  <meta property="og:description" content="Lidero equipos y proyectos con criterio técnico.">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon: tu cabeza de Minecraft (se genera a partir del nick) -->
+  <link rel="icon" href="https://mc-heads.net/avatar/zDr0peador/64">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================================================
+       1. TOKENS
+       ========================================================= */
+    :root {
+      --ink: #080C16;          /* fondo principal */
+      --panel: #0E1526;        /* superficies */
+      --panel-2: #131C33;      /* superficies elevadas / hover */
+      --console: #060A13;      /* fondo de la consola */
+      --line: #1C2740;         /* bordes */
+      --line-strong: #2A3A5C;
+      --text: #E4E9F2;
+      --muted: #8E9AB0;
+      --faint: #5D6880;
+      --blue: #3D7BFF;         /* azul corporativo */
+      --blue-hover: #5A8FFF;
+      --blue-soft: rgba(61, 123, 255, .14);
+      --blue-border: rgba(61, 123, 255, .45);
+      --blue-text: #A9C3FF;
+      --cyan: #52E0EE;         /* acento neón, uso puntual */
+      --online: #3DDC97;       /* estado "en línea" */
+
+      --font: "Sora", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+      --max: 1120px;
+      --gutter: clamp(16px, 4vw, 32px);
+      --header-h: 68px;
+      --r-lg: 16px;
+      --r-md: 12px;
+      --r-sm: 8px;
+    }
+
+    /* =========================================================
+       2. BASE
+       ========================================================= */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--ink);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 1rem;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    h1, h2, h3, h4, p { margin: 0; }
+    ul { margin: 0; padding: 0; list-style: none; }
+
+    :focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+
+    ::selection { background: var(--blue); color: #fff; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 16px; top: -60px;
+      z-index: 200;
+      padding: 10px 16px;
+      background: var(--text);
+      color: var(--ink);
+      border-radius: var(--r-sm);
+      font-weight: 600;
+    }
+    .skip-link:focus { top: 12px; }
+
+    .container {
+      width: 100%;
+      max-width: var(--max);
+      margin-inline: auto;
+      padding-inline: var(--gutter);
+    }
+
+    main section[id] { scroll-margin-top: calc(var(--header-h) + 12px); }
+
+    .icon {
+      width: 22px; height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex: none;
+    }
+    .icon-sm { width: 16px; height: 16px; }
+
+    /* =========================================================
+       3. BOTONES
+       ========================================================= */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 46px;
+      padding: 0 20px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      background: transparent;
+      font-size: .9375rem;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: background-color .15s, border-color .15s, color .15s;
+    }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--blue-hover); }
+    .btn-ghost { border-color: var(--line-strong); color: var(--text); }
+    .btn-ghost:hover { background: var(--panel-2); border-color: #3A4D75; }
+    .btn-sm { height: 38px; padding: 0 14px; font-size: .875rem; }
+
+    /* =========================================================
+       4. HEADER / NAVEGACIÓN
+       ========================================================= */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(8, 12, 22, .78);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid transparent;
+      transition: border-color .2s;
+    }
+    .site-header.is-scrolled { border-bottom-color: var(--line); }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      height: var(--header-h);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+    .brand-head {
+      position: relative;
+      width: 34px; height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      background: var(--panel-2);
+      border: 1px solid var(--line-strong);
+      overflow: hidden;
+    }
+    .brand-head img {
+      width: 22px; height: 22px;
+      image-rendering: pixelated;
+    }
+    .brand-head .fallback {
+      display: none;
+      font-family: var(--mono);
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--cyan);
+    }
+    .brand-head.is-fallback img { display: none; }
+    .brand-head.is-fallback .fallback { display: block; }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-links a {
+      display: block;
+      padding: 8px 14px;
+      border-radius: var(--r-sm);
+      color: var(--muted);
+      font-size: .9375rem;
+      transition: color .15s, background-color .15s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a[aria-current="true"] { color: var(--text); background: var(--panel-2); }
+
+    .nav-toggle {
+      display: none;
+      width: 42px; height: 42px;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      background: transparent;
+    }
+    .nav-toggle .icon-close { display: none; }
+    .nav-toggle[aria-expanded="true"] .icon-open { display: none; }
+    .nav-toggle[aria-expanded="true"] .icon-close { display: block; }
+
+    /* =========================================================
+       5. HERO
+       ========================================================= */
+    .hero {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden; /* el brillo de la tarjeta no genera scroll lateral */
+      padding: clamp(48px, 8vw, 104px) 0 clamp(64px, 9vw, 120px);
+    }
+    /* Rejilla sutil tipo panel de servidor */
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background-image:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 56px 56px;
+      -webkit-mask-image: radial-gradient(ellipse 65% 70% at 72% 35%, #000 0%, transparent 70%);
+      mask-image: radial-gradient(ellipse 65% 70% at 72% 35%, #000 0%, transparent 70%);
+      opacity: .55;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+      gap: clamp(40px, 6vw, 80px);
+      align-items: center;
+    }
+
+    .hero-name {
+      font-size: clamp(3.75rem, 10vw, 7rem);
+      font-weight: 700;
+      line-height: .92;
+      letter-spacing: -.045em;
+    }
+    .hero-nick {
+      margin-top: 14px;
+      font-family: var(--mono);
+      font-size: clamp(1.125rem, 2.2vw, 1.375rem);
+      font-weight: 500;
+      color: var(--cyan);
+    }
+    .hero-role {
+      margin-top: 32px;
+      max-width: 22ch;
+      font-size: clamp(1.375rem, 2.6vw, 1.75rem);
+      font-weight: 500;
+      line-height: 1.25;
+      letter-spacing: -.02em;
+    }
+    .hero-text {
+      margin-top: 16px;
+      max-width: 56ch;
+      color: var(--muted);
+      font-size: 1.0625rem;
+      line-height: 1.7;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    /* ---------- Tarjeta de perfil (estilo NameMC + consola) ---------- */
+    .hero-visual { position: relative; }
+    .hero-visual::before {
+      content: "";
+      position: absolute;
+      inset: 8% -6% 8% -6%;
+      z-index: -1;
+      background: radial-gradient(closest-side, rgba(61, 123, 255, .30), transparent);
+      filter: blur(28px);
+    }
+
+    .profile {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      box-shadow: 0 30px 80px -40px rgba(0, 0, 0, .8);
+    }
+
+    .profile-top {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 22px;
+      align-items: end;
+      padding: 24px;
+      background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    }
+
+    .skin {
+      position: relative;
+      width: 108px;
+      height: 156px;
+      display: grid;
+      place-items: end center;
+      border-radius: var(--r-md);
+      background: radial-gradient(ellipse 70% 30% at 50% 92%, rgba(82, 224, 238, .22), transparent 70%);
+    }
+    .skin img {
+      max-height: 100%;
+      width: auto;
+      object-fit: contain;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .55));
+    }
+    .skin .fallback {
+      display: none;
+      width: 88px; height: 88px;
+      margin-bottom: 20px;
+      place-items: center;
+      border-radius: var(--r-md);
+      background: var(--console);
+      border: 1px solid var(--line-strong);
+      font-family: var(--mono);
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--cyan);
+    }
+    .skin.is-fallback img { display: none; }
+    .skin.is-fallback .fallback { display: grid; }
+
+    .profile-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .875rem;
+      color: var(--muted);
+    }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--online);
+      box-shadow: 0 0 0 3px rgba(61, 220, 151, .18);
+    }
+    .profile-nick {
+      margin-top: 6px;
+      font-family: var(--mono);
+      font-size: clamp(1.25rem, 2.4vw, 1.5rem);
+      font-weight: 600;
+      letter-spacing: -.01em;
+      overflow-wrap: anywhere;
+    }
+    .profile-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    /* Consola */
+    .console {
+      padding: 20px 24px 22px;
+      background: var(--console);
+      border-top: 1px solid var(--line);
+      font-family: var(--mono);
+      font-size: .875rem;
+      line-height: 1.85;
+      color: #C9D3E6;
+    }
+    .c-line { min-height: 1.85em; }
+    .c-out {
+      display: grid;
+      grid-template-columns: 7.5ch minmax(0, 1fr);
+      gap: 12px;
+    }
+    .c-prompt { color: var(--blue); }
+    .c-cmd { color: var(--text); }
+    .c-key { color: var(--faint); }
+    .c-ok { color: var(--online); }
+    .caret {
+      display: inline-block;
+      width: .6em; height: 1.15em;
+      margin-left: 2px;
+      vertical-align: -.2em;
+      background: var(--cyan);
+      animation: blink 1.1s steps(1) infinite;
+    }
+    .c-line:first-child .caret { display: none; }
+    .console.is-typing .c-line:first-child .caret { display: inline-block; animation: none; }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* =========================================================
+       6. SECCIONES (estructura común)
+       ========================================================= */
+    .section {
+      padding: clamp(72px, 10vw, 128px) 0;
+      border-top: 1px solid var(--line);
+    }
+    .section-head {
+      max-width: 640px;
+      margin-bottom: clamp(36px, 5vw, 56px);
+    }
+    .section-title {
+      font-size: clamp(2rem, 4.4vw, 3rem);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -.035em;
+    }
+    .section-intro {
+      margin-top: 14px;
+      max-width: 54ch;
+      color: var(--muted);
+      font-size: 1.0625rem;
+    }
+
+    /* =========================================================
+       7. SERVICIOS (dos bloques)
+       ========================================================= */
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      align-items: start;
+    }
+    .pillar {
+      padding: clamp(24px, 3.5vw, 36px);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+    }
+    .pillar--primary {
+      border-color: var(--blue-border);
+      background:
+        linear-gradient(180deg, rgba(61, 123, 255, .09), transparent 45%),
+        var(--panel);
+    }
+    .pillar-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 14px;
+    }
+    .pillar-icon {
+      width: 46px; height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--r-md);
+      background: var(--blue-soft);
+      color: var(--blue);
+      flex: none;
+    }
+    .pillar--dev .pillar-icon {
+      background: rgba(82, 224, 238, .10);
+      color: var(--cyan);
+    }
+    .pillar-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -.02em;
+      line-height: 1.2;
+    }
+    .pill {
+      margin-left: auto;
+      padding: 4px 11px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      font-size: .8125rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .pillar--primary .pill { border-color: var(--blue-border); color: var(--blue-text); }
+
+    .pillar-lead {
+      margin: 18px 0 10px;
+      color: var(--muted);
+    }
+
+    .cap-list li {
+      padding: 18px 0;
+      border-top: 1px solid var(--line);
+    }
+    .cap-list li:last-child { padding-bottom: 0; }
+    .cap-title {
+      font-size: 1.0625rem;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+    .cap-text {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: .9375rem;
+    }
+
+    .stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+    }
+    .stack li {
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel-2);
+      font-family: var(--mono);
+      font-size: .8125rem;
+      color: #C6D0E2;
+    }
+
+    /* =========================================================
+       8. PROYECTOS (lista estilo servidores)
+       ========================================================= */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .chip {
+      height: 36px;
+      padding: 0 16px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      font-size: .875rem;
+      font-weight: 500;
+      transition: background-color .15s, color .15s, border-color .15s;
+    }
+    .chip:hover { color: var(--text); }
+    .chip[aria-pressed="true"] {
+      background: var(--text);
+      border-color: var(--text);
+      color: var(--ink);
+    }
+
+    /* gap + fondo = líneas divisorias que funcionan aunque se oculten filas */
+    .server-list {
+      display: grid;
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+    }
+    .server {
+      display: grid;
+      grid-template-columns: 64px minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: center;
+      padding: 22px 24px;
+      background: var(--panel);
+      transition: background-color .15s;
+    }
+    .server:hover { background: #111A2E; }
+    .server[hidden] { display: none; }
+
+    .server-icon {
+      width: 64px; height: 64px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--r-md);
+      background: linear-gradient(140deg, hsl(var(--hue) 70% 50%), hsl(calc(var(--hue) + 35) 65% 28%));
+      font-family: var(--mono);
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #fff;
+      overflow: hidden;
+    }
+    .server-icon img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      image-rendering: pixelated;
+    }
+
+    .server-name {
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+    .server-role {
+      margin-top: 2px;
+      font-size: .9375rem;
+      color: var(--blue-text);
+    }
+    .server-motd {
+      margin-top: 6px;
+      max-width: 62ch;
+      color: var(--muted);
+      font-size: .9375rem;
+    }
+    .server-extra {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .ip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 30px;
+      padding: 0 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background: var(--console);
+      font-family: var(--mono);
+      font-size: .8125rem;
+      color: #C6D0E2;
+      transition: border-color .15s, color .15s;
+    }
+    .ip:hover { border-color: var(--blue); color: var(--text); }
+    .text-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 30px;
+      font-size: .875rem;
+      font-weight: 500;
+      color: var(--blue-text);
+    }
+    .text-link:hover { color: var(--text); }
+
+    .server-side {
+      display: grid;
+      justify-items: end;
+      gap: 6px;
+      text-align: right;
+    }
+    .server-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .875rem;
+      font-weight: 500;
+    }
+    .ping { width: 20px; height: 16px; fill: var(--online); flex: none; }
+    .ping--off { fill: var(--faint); }
+    .server-period {
+      font-size: .875rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* =========================================================
+       9. CONTACTO
+       ========================================================= */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+      gap: clamp(32px, 6vw, 80px);
+      align-items: start;
+    }
+    .contact-grid .section-head { margin-bottom: 0; }
+    .contact-panel { display: grid; gap: 12px; }
+
+    .c-icon {
+      width: 44px; height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--r-md);
+      background: var(--blue-soft);
+      color: var(--blue);
+      flex: none;
+    }
+
+    .discord {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+      padding: 22px;
+      background:
+        linear-gradient(180deg, rgba(61, 123, 255, .09), transparent 60%),
+        var(--panel);
+      border: 1px solid var(--blue-border);
+      border-radius: var(--r-lg);
+    }
+    .discord-label { font-size: .875rem; color: var(--muted); }
+    .discord-user {
+      margin-top: 2px;
+      font-family: var(--mono);
+      font-size: 1.125rem;
+      font-weight: 500;
+    }
+    .discord .btn { margin-left: auto; }
+
+    .links {
+      display: grid;
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+    }
+    .links a {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 22px;
+      background: var(--panel);
+      transition: background-color .15s;
+    }
+    .links a:hover { background: var(--panel-2); }
+    .links .c-icon {
+      width: 40px; height: 40px;
+      background: var(--panel-2);
+      color: var(--muted);
+    }
+    .link-text { display: grid; min-width: 0; }
+    .link-label { font-weight: 500; }
+    .link-value {
+      font-size: .875rem;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+    .link-arrow {
+      margin-left: auto;
+      color: var(--faint);
+      transition: color .15s, transform .15s;
+    }
+    .links a:hover .link-arrow { color: var(--text); transform: translate(2px, -2px); }
+
+    /* =========================================================
+       10. FOOTER Y TOAST
+       ========================================================= */
+    .site-footer {
+      padding: 28px 0;
+      border-top: 1px solid var(--line);
+      font-size: .875rem;
+      color: var(--muted);
+    }
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .site-footer a:hover { color: var(--text); }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      z-index: 100;
+      max-width: calc(100% - 32px);
+      padding: 12px 18px;
+      border-radius: 10px;
+      background: var(--text);
+      color: var(--ink);
+      font-size: .9375rem;
+      font-weight: 500;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .45);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 12px);
+      transition: opacity .2s, transform .2s;
+    }
+    .toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+    /* =========================================================
+       11. RESPONSIVE
+       ========================================================= */
+    @media (max-width: 960px) {
+      .hero-grid { grid-template-columns: minmax(0, 1fr); }
+      .hero-visual { max-width: 560px; }
+      .contact-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    @media (max-width: 860px) {
+      .pillars { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    @media (max-width: 760px) {
+      .nav-toggle { display: inline-grid; }
+      .nav-menu {
+        position: fixed;
+        top: var(--header-h);
+        left: 0; right: 0;
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px var(--gutter) 20px;
+        background: var(--ink);
+        border-bottom: 1px solid var(--line);
+      }
+      .nav-menu.is-open { display: flex; }
+      .nav-links { flex-direction: column; align-items: stretch; }
+      .nav-links a { padding: 12px 14px; font-size: 1rem; }
+    }
+
+    @media (max-width: 640px) {
+      .profile-top { grid-template-columns: 1fr; justify-items: start; }
+      .skin { width: 100%; height: 150px; }
+      .console { padding: 18px; font-size: .8125rem; }
+
+      .server {
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: 14px 16px;
+        align-items: start;
+        padding: 20px;
+      }
+      .server-icon { width: 48px; height: 48px; font-size: .9375rem; }
+      .server-side {
+        grid-column: 2;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 6px 14px;
+        text-align: left;
+      }
+
+      .discord .btn { margin-left: 0; width: 100%; }
+
+      /* La etiqueta pasa debajo del título, alineada con él */
+      .pillar-head {
+        display: grid;
+        grid-template-columns: 46px minmax(0, 1fr);
+        gap: 8px 14px;
+      }
+      .pillar-title { font-size: 1.375rem; }
+      .pill { grid-column: 2; justify-self: start; margin-left: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <!-- Iconos reutilizables -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></symbol>
+    <symbol id="i-ping" viewBox="0 0 20 16"><rect x="0" y="12" width="3" height="4"/><rect x="4" y="9" width="3" height="7"/><rect x="8" y="6" width="3" height="10"/><rect x="12" y="3" width="3" height="13"/><rect x="16" y="0" width="3" height="16"/></symbol>
+  </svg>
+
+  <!-- =====================================================
+       HEADER
+       ===================================================== -->
+  <header class="site-header">
+    <nav class="nav container" aria-label="Principal">
+      <a class="brand" href="#inicio">
+        <span class="brand-head" data-fallback-wrap>
+          <img src="https://mc-heads.net/avatar/zDr0peador/44" alt="" width="22" height="22" data-fallback>
+          <span class="fallback">zD</span>
+        </span>
+        zDr0peador
+      </a>
+
+      <div class="nav-menu" id="nav-menu">
+        <ul class="nav-links">
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#proyectos">Proyectos</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+        <a class="btn btn-primary btn-sm" href="#contacto">Contactar</a>
+      </div>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+        <span class="sr-only">Abrir menú</span>
+        <svg class="icon icon-open" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <svg class="icon icon-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </nav>
+  </header>
+
+  <main id="contenido">
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+    <section class="hero" id="inicio">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <h1 class="hero-name">Jorge</h1>
+          <p class="hero-nick">zDr0peador</p>
+
+          <p class="hero-role">Management de proyectos y comunidades</p>
+          <p class="hero-text">
+            Organizo equipos, ordeno proyectos y hago que las comunidades funcionen día a día.
+            Como programador y desarrollador de plugins entiendo lo técnico desde dentro:
+            convierto objetivos en planes claros, hablo el mismo idioma que el equipo de
+            desarrollo y propongo soluciones que de verdad se pueden construir.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#contacto">Hablemos</a>
+            <a class="btn btn-ghost" href="#proyectos">Ver proyectos</a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <article class="profile" aria-label="Perfil de jugador de zDr0peador">
+            <div class="profile-top">
+              <!-- Render de tu skin (mc-heads.net). Si el nick no tiene cuenta premium mostrará la skin por defecto. -->
+              <div class="skin" data-fallback-wrap>
+                <img src="https://mc-heads.net/body/zDr0peador/120" alt="Skin de Minecraft de zDr0peador" height="150" data-fallback>
+                <span class="fallback" aria-hidden="true">zD</span>
+              </div>
+
+              <div class="profile-id">
+                <p class="profile-status"><span class="dot" aria-hidden="true"></span>Disponible para proyectos</p>
+                <p class="profile-nick">zDr0peador</p>
+                <div class="profile-actions">
+                  <button class="btn btn-ghost btn-sm" type="button" data-copy="zDr0peador" data-toast="Nick copiado">
+                    <svg class="icon icon-sm" aria-hidden="true"><use href="#i-copy"/></svg>
+                    Copiar nick
+                  </button>
+                  <a class="btn btn-ghost btn-sm" href="https://namemc.com/profile/zDr0peador" target="_blank" rel="noopener">
+                    Ver en NameMC
+                    <svg class="icon icon-sm" aria-hidden="true"><use href="#i-arrow"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Consola decorativa: la información ya está en el texto del hero -->
+            <div class="console" id="console" aria-hidden="true">
+              <div class="c-line"><span class="c-prompt">&gt;</span> <span class="c-cmd">/whois zDr0peador</span><span class="caret"></span></div>
+              <div class="c-line c-out"><span class="c-key">nombre</span><span>Jorge</span></div>
+              <div class="c-line c-out"><span class="c-key">rol</span><span>Management</span></div>
+              <div class="c-line c-out"><span class="c-key">además</span><span>Plugins y programación</span></div>
+              <div class="c-line c-out"><span class="c-key">estado</span><span class="c-ok">Disponible</span></div>
+              <div class="c-line"><span class="c-prompt">&gt;</span> <span class="caret"></span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         SERVICIOS
+         ===================================================== -->
+    <section class="section" id="servicios" aria-labelledby="servicios-title">
+      <div class="container">
+        <header class="section-head">
+          <h2 class="section-title" id="servicios-title">Lo que aporto</h2>
+          <p class="section-intro">Dirijo personas y procesos. Cuando hace falta, también escribo el código.</p>
+        </header>
+
+        <div class="pillars">
+          <!-- Bloque A: Management -->
+          <article class="pillar pillar--primary">
+            <header class="pillar-head">
+              <span class="pillar-icon">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8"/><path d="M18.5 14.8c1.6.8 2.6 2.6 3 5.2"/></svg>
+              </span>
+              <h3 class="pillar-title">Management</h3>
+              <span class="pill">Rol principal</span>
+            </header>
+            <p class="pillar-lead">Equipos que saben qué hacer y por qué lo hacen.</p>
+
+            <ul class="cap-list">
+              <li>
+                <h4 class="cap-title">Gestión de equipos</h4>
+                <p class="cap-text">Estructuro roles, defino responsabilidades y acompaño al staff para que trabaje con autonomía.</p>
+              </li>
+              <li>
+                <h4 class="cap-title">Estrategia</h4>
+                <p class="cap-text">Fijo objetivos medibles y prioridades claras, alineados con lo que el proyecto y la comunidad necesitan.</p>
+              </li>
+              <li>
+                <h4 class="cap-title">Optimización de operaciones</h4>
+                <p class="cap-text">Detecto cuellos de botella y documento procesos para que el día a día sea más ágil y predecible.</p>
+              </li>
+              <li>
+                <h4 class="cap-title">Resolución de conflictos</h4>
+                <p class="cap-text">Medio con criterio y transparencia, tanto dentro del equipo como con la comunidad.</p>
+              </li>
+            </ul>
+          </article>
+
+          <!-- Bloque B: Desarrollo / Programación -->
+          <article class="pillar pillar--dev">
+            <header class="pillar-head">
+              <span class="pillar-icon">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 7-5 5 5 5"/><path d="m16 7 5 5-5 5"/><path d="m13.5 4-3 16"/></svg>
+              </span>
+              <h3 class="pillar-title">Desarrollo y programación</h3>
+              <span class="pill">Base técnica</span>
+            </header>
+            <p class="pillar-lead">Criterio técnico para decidir bien y resolver rápido.</p>
+
+            <ul class="cap-list">
+              <li>
+                <h4 class="cap-title">Desarrollo de plugins</h4>
+                <p class="cap-text">Creo y adapto plugins a medida según lo que necesita cada servidor o proyecto.</p>
+              </li>
+              <li>
+                <h4 class="cap-title">Lógica de programación</h4>
+                <p class="cap-text">Diseño soluciones mantenibles, pensadas para crecer sin romperse.</p>
+              </li>
+              <li>
+                <h4 class="cap-title">Soporte técnico</h4>
+                <p class="cap-text">Diagnostico errores, configuro y dejo al equipo con lo necesario para seguir solo.</p>
+              </li>
+            </ul>
+
+            <!-- EDITA: tus tecnologías reales -->
+            <ul class="stack" aria-label="Tecnologías">
+              <li>Java</li>
+              <li>Paper / Spigot</li>
+              <li>Velocity / BungeeCord</li>
+              <li>MySQL</li>
+              <li>Git</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         PROYECTOS / EXPERIENCIA
+         ===================================================== -->
+    <section class="section" id="proyectos" aria-labelledby="proyectos-title">
+      <div class="container">
+        <header class="section-head">
+          <h2 class="section-title" id="proyectos-title">Proyectos y servidores</h2>
+          <p class="section-intro">Lugares donde he liderado equipos o escrito el código que los hacía funcionar.</p>
+        </header>
+
+        <div class="filters" role="group" aria-label="Filtrar proyectos">
+          <button class="chip" type="button" data-filter="all" aria-pressed="true">Todos</button>
+          <button class="chip" type="button" data-filter="management" aria-pressed="false">Management</button>
+          <button class="chip" type="button" data-filter="dev" aria-pressed="false">Desarrollo</button>
+        </div>
+        <p class="sr-only" id="filter-status" aria-live="polite"></p>
+
+        <!--
+          EDITA: estos proyectos son ejemplos. Para cada uno cambia:
+          - data-category: "management", "dev" o ambos separados por espacio
+          - --hue (color del icono, 0–360) o pon un <img> dentro de .server-icon con el icono real
+          - nombre, rol, descripción, IP/enlace, estado y fechas
+          Estado: usa class="ping" (verde) para activo y class="ping ping--off" (gris) para finalizado.
+        -->
+        <ul class="server-list">
+          <li class="server" data-category="management">
+            <div class="server-icon" style="--hue: 218" aria-hidden="true">AN</div>
+            <div class="server-main">
+              <h3 class="server-name">Aurora Network</h3>
+              <p class="server-role">Manager general</p>
+              <p class="server-motd">Coordino un staff de más de 20 personas, la hoja de ruta de actualizaciones y la relación con la comunidad.</p>
+              <div class="server-extra">
+                <button class="ip" type="button" data-copy="play.example.net" data-toast="IP copiada" aria-label="Copiar IP play.example.net">
+                  play.example.net
+                  <svg class="icon icon-sm" aria-hidden="true"><use href="#i-copy"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="server-side">
+              <span class="server-status"><svg class="ping" aria-hidden="true"><use href="#i-ping"/></svg>Activo</span>
+              <span class="server-period">2024 – actualidad</span>
+            </div>
+          </li>
+
+          <li class="server" data-category="dev">
+            <div class="server-icon" style="--hue: 185" aria-hidden="true">VS</div>
+            <div class="server-main">
+              <h3 class="server-name">Vertex Studios</h3>
+              <p class="server-role">Desarrollador de plugins</p>
+              <p class="server-motd">Plugins a medida para varios servidores: economía, minijuegos y herramientas internas para el staff.</p>
+            </div>
+            <div class="server-side">
+              <span class="server-status"><svg class="ping ping--off" aria-hidden="true"><use href="#i-ping"/></svg>Finalizado</span>
+              <span class="server-period">2023 – 2024</span>
+            </div>
+          </li>
+
+          <li class="server" data-category="management dev">
+            <div class="server-icon" style="--hue: 255" aria-hidden="true">LS</div>
+            <div class="server-main">
+              <h3 class="server-name">Lumen SMP</h3>
+              <p class="server-role">Coordinador de comunidad y soporte técnico</p>
+              <p class="server-motd">Reorganicé el sistema de tickets, formé al equipo de soporte y resolví incidencias técnicas del servidor.</p>
+            </div>
+            <div class="server-side">
+              <span class="server-status"><svg class="ping ping--off" aria-hidden="true"><use href="#i-ping"/></svg>Finalizado</span>
+              <span class="server-period">2022 – 2023</span>
+            </div>
+          </li>
+
+          <li class="server" data-category="dev">
+            <div class="server-icon" style="--hue: 150" aria-hidden="true">SC</div>
+            <div class="server-main">
+              <h3 class="server-name">StaffCore</h3>
+              <p class="server-role">Plugin propio</p>
+              <p class="server-motd">Herramientas de moderación para el staff: registro de sanciones, notas internas y avisos automáticos.</p>
+              <div class="server-extra">
+                <!-- EDITA: enlace al repositorio -->
+                <a class="text-link" href="https://github.com/zDr0peador" target="_blank" rel="noopener">
+                  Ver código
+                  <svg class="icon icon-sm" aria-hidden="true"><use href="#i-arrow"/></svg>
+                </a>
+              </div>
+            </div>
+            <div class="server-side">
+              <span class="server-status"><svg class="ping" aria-hidden="true"><use href="#i-ping"/></svg>Mantenido</span>
+              <span class="server-period">2023 – actualidad</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         CONTACTO
+         ===================================================== -->
+    <section class="section" id="contacto" aria-labelledby="contacto-title">
+      <div class="container contact-grid">
+        <header class="section-head">
+          <h2 class="section-title" id="contacto-title">Hablemos</h2>
+          <p class="section-intro">¿Tienes un servidor, un equipo o un proyecto que necesita orden? Escríbeme y vemos cómo puedo ayudarte.</p>
+        </header>
+
+        <div class="contact-panel">
+          <!-- EDITA: tu usuario de Discord (los usuarios nuevos van en minúsculas) -->
+          <div class="discord">
+            <span class="c-icon">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
+            </span>
+            <div>
+              <p class="discord-label">Discord, la forma más rápida</p>
+              <p class="discord-user">zdr0peador</p>
+            </div>
+            <button class="btn btn-primary" type="button" data-copy="zdr0peador" data-toast="Usuario de Discord copiado">
+              <svg class="icon icon-sm" aria-hidden="true"><use href="#i-copy"/></svg>
+              Copiar usuario
+            </button>
+          </div>
+
+          <ul class="links">
+            <li>
+              <!-- EDITA: tu correo -->
+              <a href="mailto:jorgeochooa16@gmail.com">
+                <span class="c-icon">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg>
+                </span>
+                <span class="link-text">
+                  <span class="link-label">Correo</span>
+                  <span class="link-value">jorgeochooa16@gmail.com</span>
+                </span>
+                <svg class="icon icon-sm link-arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+              </a>
+            </li>
+            <li>
+              <!-- EDITA: tu GitHub -->
+              <a href="https://github.com/zDr0peador" target="_blank" rel="noopener">
+                <span class="c-icon">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5.5" r="2.5"/><circle cx="6" cy="18.5" r="2.5"/><circle cx="18" cy="7.5" r="2.5"/><path d="M6 8v8"/><path d="M18 10c0 4-4 5-10.5 6.8"/></svg>
+                </span>
+                <span class="link-text">
+                  <span class="link-label">GitHub</span>
+                  <span class="link-value">github.com/zDr0peador</span>
+                </span>
+                <svg class="icon icon-sm link-arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+              </a>
+            </li>
+            <li>
+              <a href="https://namemc.com/profile/zDr0peador" target="_blank" rel="noopener">
+                <span class="c-icon">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 17c.8-1.8 2.2-2.6 4-2.6s3.2.8 4 2.6"/></svg>
+                </span>
+                <span class="link-text">
+                  <span class="link-label">NameMC</span>
+                  <span class="link-value">namemc.com/profile/zDr0peador</span>
+                </span>
+                <svg class="icon icon-sm link-arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span data-year>2026</span> Jorge (zDr0peador)</p>
+      <a href="#inicio">Volver arriba</a>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const $ = (s, c = document) => c.querySelector(s);
+      const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* Año del footer */
+      $$('[data-year]').forEach(el => { el.textContent = new Date().getFullYear(); });
+
+      /* Borde del header al hacer scroll */
+      const header = $('.site-header');
+      const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      /* Menú móvil */
+      const toggle = $('.nav-toggle');
+      const menu = $('#nav-menu');
+      const setMenu = open => {
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.querySelector('.sr-only').textContent = open ? 'Cerrar menú' : 'Abrir menú';
+        menu.classList.toggle('is-open', open);
+      };
+      toggle.addEventListener('click', () => setMenu(toggle.getAttribute('aria-expanded') !== 'true'));
+      $$('a', menu).forEach(a => a.addEventListener('click', () => setMenu(false)));
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+      window.matchMedia('(min-width: 761px)').addEventListener('change', e => { if (e.matches) setMenu(false); });
+
+      /* Enlace activo según la sección visible */
+      const navLinks = $$('.nav-links a');
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          navLinks.forEach(a => {
+            if (a.getAttribute('href') === '#' + entry.target.id) a.setAttribute('aria-current', 'true');
+            else a.removeAttribute('aria-current');
+          });
+        });
+      }, { rootMargin: '-45% 0px -50% 0px' });
+      $$('main section[id]').forEach(s => observer.observe(s));
+
+      /* Copiar al portapapeles + aviso */
+      const toast = $('#toast');
+      let toastTimer;
+      const showToast = msg => {
+        toast.textContent = msg;
+        toast.classList.add('is-visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2400);
+      };
+      const copyText = async text => {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+          document.body.appendChild(ta);
+          ta.select();
+          let ok = false;
+          try { ok = document.execCommand('copy'); } catch { ok = false; }
+          ta.remove();
+          return ok;
+        }
+      };
+      $$('[data-copy]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const value = btn.dataset.copy;
+          const ok = await copyText(value);
+          showToast(ok
+            ? `${btn.dataset.toast || 'Copiado'}: ${value}`
+            : `No se pudo copiar. Copia manualmente: ${value}`);
+        });
+      });
+
+      /* Filtro de proyectos */
+      const chips = $$('.chip');
+      const servers = $$('.server');
+      const filterStatus = $('#filter-status');
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          const filter = chip.dataset.filter;
+          let visible = 0;
+          chips.forEach(c => c.setAttribute('aria-pressed', String(c === chip)));
+          servers.forEach(s => {
+            const show = filter === 'all' || s.dataset.category.split(' ').includes(filter);
+            s.hidden = !show;
+            if (show) visible++;
+          });
+          filterStatus.textContent = `Mostrando ${visible} ${visible === 1 ? 'proyecto' : 'proyectos'}`;
+        });
+      });
+
+      /* Respaldo si no carga la skin o la cabeza de Minecraft */
+      $$('img[data-fallback]').forEach(img => {
+        const fail = () => img.closest('[data-fallback-wrap]')?.classList.add('is-fallback');
+        if (img.complete && img.naturalWidth === 0) fail();
+        else img.addEventListener('error', fail);
+      });
+
+      /* Consola: escribe el comando y muestra la respuesta al cargar */
+      const consoleEl = $('#console');
+      if (consoleEl && !reduceMotion) {
+        const lines = $$('.c-line', consoleEl);
+        const cmd = $('.c-cmd', consoleEl);
+        const fullCmd = cmd.textContent;
+        cmd.textContent = '';
+        lines.slice(1).forEach(l => { l.style.visibility = 'hidden'; });
+        consoleEl.classList.add('is-typing');
+
+        let i = 0;
+        const reveal = n => {
+          if (n >= lines.length) return;
+          lines[n].style.visibility = 'visible';
+          setTimeout(() => reveal(n + 1), 130);
+        };
+        const type = () => {
+          if (i <= fullCmd.length) {
+            cmd.textContent = fullCmd.slice(0, i++);
+            setTimeout(type, 40 + Math.random() * 45);
+          } else {
+            consoleEl.classList.remove('is-typing');
+            setTimeout(() => reveal(1), 220);
+          }
+        };
+        setTimeout(type, 600);
+      }
+    })();
+  </script>
+</body>
+</html>
